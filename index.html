@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Smart Teacher — STEM факультатив көмекшісі</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=PT+Sans:wght@400;700&display=swap">
+<style>
+  :root {
+    --ink: #1B2440;
+    --ink-2: #4A5470;
+    --muted: #6B7287;
+    --bg: #F4F2EC;
+    --card: #FFFDF8;
+    --line: #E3DDD0;
+    --navy: #14213D;
+    --orange: #E07A2F;
+    --rust: #B5541A;
+    --blue: #2F6FB3;
+    --blue-soft: #DCE6F2;
+    --green: #23845A;
+    --green-soft: #DCEFE4;
+    --red: #B83A2E;
+    --red-soft: #F6DEDA;
+    --amber-soft: #F8E5D2;
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { font-family: 'PT Sans', Arial, sans-serif; background: var(--bg); color: var(--ink); font-size: 16px; line-height: 1.45; }
+  h1, h2, h3, .brand, .tab, .btn, .kpi-v { font-family: 'Nunito', Verdana, sans-serif; }
+  h2 { font-size: 26px; margin: 0 0 4px; font-weight: 800; }
+  h3 { font-size: 18px; margin: 0 0 8px; font-weight: 800; }
+  p { margin: 0 0 8px; }
+  button, input, select, textarea { font: inherit; color: inherit; }
+
+  /* Header */
+  .top { background: var(--navy); color: #F4F2EC; }
+  .top-in { max-width: 1180px; margin: 0 auto; padding: 14px 20px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+  .brand { display: flex; align-items: center; gap: 12px; margin-right: auto; }
+  .logo { width: 42px; height: 42px; border-radius: 12px; background: var(--orange); display: grid; place-items: center; }
+  .brand-name { font-size: 22px; font-weight: 900; line-height: 1.1; }
+  .brand-sub { font-family: 'PT Sans', Arial, sans-serif; font-size: 14px; color: #BFC8DA; }
+  .seg { display: inline-flex; background: rgba(255,255,255,.1); border-radius: 999px; padding: 3px; }
+  .seg button { border: 0; background: transparent; color: #DCE3EF; padding: 7px 14px; border-radius: 999px; cursor: pointer; font-family: 'Nunito', Verdana, sans-serif; font-weight: 800; font-size: 14px; }
+  .seg button.on { background: #F4F2EC; color: var(--navy); }
+  .who { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #DCE3EF; }
+  .who select { background: #F4F2EC; color: var(--navy); border: 0; border-radius: 8px; padding: 6px 8px; }
+
+  /* Tabs */
+  .tabs-wrap { background: var(--card); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 5; }
+  .tabs { max-width: 1180px; margin: 0 auto; padding: 0 12px; display: flex; gap: 2px; overflow-x: auto; }
+  .tab { border: 0; background: transparent; padding: 14px 14px 12px; font-weight: 800; font-size: 15px; color: var(--ink-2); cursor: pointer; border-bottom: 3px solid transparent; white-space: nowrap; }
+  .tab.on { color: var(--navy); border-bottom-color: var(--orange); }
+
+  main { max-width: 1180px; margin: 0 auto; padding: 24px 20px 40px; }
+  .head-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; }
+  .sub { color: var(--muted); }
+
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; }
+  .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+  .two { display: grid; gap: 16px; grid-template-columns: 1fr 1fr; }
+  @media (max-width: 820px) { .two { grid-template-columns: 1fr; } }
+
+  .btn { border: 0; border-radius: 10px; padding: 9px 16px; font-weight: 800; font-size: 14px; cursor: pointer; background: var(--navy); color: #F4F2EC; }
+  .btn:hover { filter: brightness(1.1); }
+  .btn.ghost { background: transparent; color: var(--navy); border: 1.5px solid var(--line); }
+  .btn.orange { background: var(--orange); color: var(--navy); }
+  .btn.danger { background: var(--red); color: #fff; }
+  .btn.sm { padding: 6px 11px; font-size: 13px; }
+  .btn:focus-visible, .tab:focus-visible, .seg button:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+  .chip { display: inline-block; font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 999px; background: var(--blue-soft); color: var(--navy); }
+  .chip.o { background: var(--amber-soft); color: #7A3A10; }
+  .chip.g { background: var(--green-soft); color: #145238; }
+
+  .lesson-card { display: flex; flex-direction: column; gap: 10px; }
+  .lesson-card h3 { font-size: 19px; margin: 0; }
+  .lesson-card .goal { color: var(--ink-2); font-size: 15px; flex: 1; }
+  .lc-icon { width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center; font-size: 24px; }
+
+  label.f { display: block; font-weight: 700; font-size: 14px; margin: 12px 0 4px; }
+  input[type=text], input[type=number], textarea, select.in { width: 100%; padding: 9px 11px; border: 1.5px solid var(--line); border-radius: 10px; background: #fff; }
+  textarea { min-height: 90px; resize: vertical; }
+  input:focus, textarea:focus, select:focus { outline: none; border-color: var(--blue); }
+  .err { color: var(--red); font-weight: 700; font-size: 14px; margin-top: 8px; }
+
+  .callout { background: var(--amber-soft); border-left: 4px solid var(--orange); border-radius: 10px; padding: 12px 14px; }
+  ul.clean { margin: 0; padding-left: 20px; }
+  ul.clean li { margin: 3px 0; }
+  .step { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; margin-bottom: 8px; background: #fff; cursor: pointer; }
+  .step input { margin-top: 4px; width: 18px; height: 18px; flex-shrink: 0; accent-color: var(--green); }
+  .step.done { background: var(--green-soft); border-color: #B6DCC6; }
+  .step.done span { text-decoration: line-through; color: var(--ink-2); }
+  .progress { height: 10px; background: var(--line); border-radius: 99px; overflow: hidden; }
+  .progress > div { height: 100%; background: var(--green); }
+
+  .q { padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: #fff; margin-bottom: 12px; }
+  .q-t { font-weight: 700; margin-bottom: 8px; }
+  .opt { display: flex; gap: 10px; align-items: center; padding: 8px 10px; border-radius: 8px; cursor: pointer; }
+  .opt:hover { background: var(--bg); }
+  .opt input { accent-color: var(--navy); width: 17px; height: 17px; }
+  .opt.ok { background: var(--green-soft); }
+  .opt.bad { background: var(--red-soft); }
+  .verdict { font-weight: 800; font-size: 14px; margin-top: 6px; }
+  .verdict.ok { color: var(--green); }
+  .verdict.bad { color: var(--red); }
+
+  /* Grades */
+  .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--card); }
+  table { border-collapse: collapse; width: 100%; font-size: 15px; }
+  th, td { padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  th { background: #EFEBE1; font-weight: 700; font-size: 13px; color: var(--ink-2); }
+  tr:last-child td { border-bottom: 0; }
+  td.num, th.num { text-align: center; }
+  .score-in { width: 74px; padding: 6px 8px; border: 1.5px solid var(--line); border-radius: 8px; text-align: center; background: #fff; }
+  .score-in.invalid { border-color: var(--red); background: var(--red-soft); }
+  .badge { display: inline-block; min-width: 34px; text-align: center; padding: 3px 8px; border-radius: 8px; font-weight: 800; font-family: 'Nunito', Verdana, sans-serif; }
+  .g5 { background: var(--green-soft); color: #145238; }
+  .g4 { background: var(--blue-soft); color: #173E68; }
+  .g3 { background: var(--amber-soft); color: #7A3A10; }
+  .g2 { background: var(--red-soft); color: #7D2219; }
+  .settings { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+  .settings label { font-size: 13px; font-weight: 700; color: var(--ink-2); display: block; margin-bottom: 4px; }
+  .note { font-size: 14px; color: var(--muted); margin-top: 10px; }
+
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+  .kpi { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; }
+  .kpi-l { font-size: 13px; color: var(--muted); font-weight: 700; }
+  .kpi-v { font-size: 30px; font-weight: 900; color: var(--navy); line-height: 1.2; }
+  .bars { display: flex; flex-direction: column; gap: 8px; }
+  .bar-row { display: grid; grid-template-columns: 120px 1fr 56px; gap: 10px; align-items: center; font-size: 14px; }
+  .bar-track { height: 20px; background: #EFEBE1; border-radius: 6px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 6px; }
+  .bar-v { text-align: right; font-weight: 700; }
+  .bars.wide .bar-row { grid-template-columns: minmax(150px, 230px) 1fr 40px; }
+
+  .fb-box { white-space: pre-wrap; background: #fff; border: 1.5px solid var(--line); border-radius: 12px; padding: 16px; font-size: 16px; line-height: 1.55; min-height: 140px; }
+
+  .test-row { display: flex; gap: 10px; align-items: center; padding: 9px 12px; border-bottom: 1px solid var(--line); font-size: 15px; }
+  .test-row:last-child { border-bottom: 0; }
+  .pass { color: var(--green); font-weight: 800; }
+  .fail { color: var(--red); font-weight: 800; }
+  code { font-family: Consolas, 'Courier New', monospace; font-size: 14px; background: #EFEBE1; padding: 1px 5px; border-radius: 5px; }
+
+  .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: var(--navy); color: #F4F2EC; padding: 10px 18px; border-radius: 10px; font-weight: 700; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 20; }
+  .toast.show { opacity: 1; }
+  footer { max-width: 1180px; margin: 0 auto; padding: 0 20px 32px; display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; color: var(--muted); font-size: 14px; }
+  .empty { text-align: center; color: var(--muted); padding: 36px 16px; }
+</style>
+</head>
+<body>
+<header class="top"><div class="top-in" id="topbar"></div></header>
+<div class="tabs-wrap"><nav class="tabs" id="tabs" aria-label="Sections"></nav></div>
+<main id="view"></main>
+<footer id="foot"></footer>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ===================== LOGIC (pure functions, tested on the «Тексеру» tab) ===================== */
+function round1(x) { return Math.round(x * 10) / 10; }
+function pctToGrade(p) {
+  if (p >= 85) return 5;
+  if (p >= 65) return 4;
+  if (p >= 40) return 3;
+  return 2;
+}
+// Returns a number in [0, max] or null when empty / invalid.
+function parseScore(raw, max) {
+  if (raw === null || raw === undefined) return null;
+  const s = String(raw).trim().replace(',', '.');
+  if (s === '') return null;
+  const v = Number(s);
+  if (!Number.isFinite(v) || v < 0 || v > max) return null;
+  return v;
+}
+// Term percent: (FO + SOR) weigh 50%, SOCh weighs 50%. fo = average of formative marks on a 10-point scale.
+function termPct(s, cfg) {
+  const vals = [s.fo, s.b1, s.b2, s.t];
+  if (vals.some(v => v === null || v === undefined || Number.isNaN(v))) return null;
+  const n = cfg.foCount;
+  const sumA = s.fo * n + s.b1 + s.b2;
+  const maxA = 10 * n + cfg.max1 + cfg.max2;
+  return round1(sumA / maxA * 50 + s.t / cfg.maxT * 50);
+}
+function classStats(grades) {
+  const n = grades.length;
+  if (!n) return { n: 0, pass: 0, qual: 0, dist: { 5: 0, 4: 0, 3: 0, 2: 0 } };
+  const dist = { 5: 0, 4: 0, 3: 0, 2: 0 };
+  grades.forEach(g => dist[g]++);
+  return {
+    n,
+    pass: round1((n - dist[2]) / n * 100),
+    qual: round1((dist[5] + dist[4]) / n * 100),
+    dist
+  };
+}
+function scoreAnswers(quiz, answers) {
+  const n = quiz.length;
+  let c = 0;
+  quiz.forEach((q, i) => { if (answers[i] === q.a) c++; });
+  return { correct: c, total: n, pct: n ? round1(c / n * 100) : 0 };
+}
+
+/* ===================== I18N ===================== */
+const I18N = {
+  kk: {
+    appSub: 'STEM факультатив мұғалімінің цифрлық көмекшісі',
+    teacher: 'Мұғалім', student: 'Оқушы', iAm: 'Мен:',
+    tabLessons: 'Сабақтар', tabQuizzes: 'Тесттер', tabGrades: 'Бағалау', tabResults: 'Нәтижелер', tabFeedback: 'Кері байланыс', tabCheck: 'Тексеру', tabMy: 'Менің нәтижелерім',
+    demoNote: 'Барлық оқушы аттары мен деректер — демонстрациялық.',
+    reset: 'Демо деректерді қалпына келтіру', resetConfirm: 'Растау: барлық өзгеріс өшеді', resetDone: 'Демо деректер қалпына келтірілді',
+    lessonsTitle: 'STEM сабақтары', lessonsSub: 'Тәжірибеге негізделген факультатив сабақтарын құрыңыз және оқушыларға ашыңыз.',
+    myLessonsSub: 'Сабақты ашып, тәжірибе қадамдарын орында және тест тапсыр.',
+    newLesson: '+ Жаңа сабақ', open: 'Ашу', edit: 'Өңдеу', del: 'Жою', confirmDel: 'Жоюды растау', cancel: 'Болдырмау', save: 'Сақтау', back: '← Артқа',
+    newLessonTitle: 'Жаңа сабақ', editLessonTitle: 'Сабақты өңдеу',
+    fTitle: 'Тақырып', fSubject: 'Пән', fGrade: 'Сынып', fDuration: 'Ұзақтығы (мин)', fGoal: 'Сабақ мақсаты', fMaterials: 'Материалдар (әр жолға біреу)', fSafety: 'Қауіпсіздік ережесі', fSteps: 'Тәжірибе қадамдары (әр жолға біреу)',
+    errTitle: 'Тақырып пен кемінде бір тәжірибе қадамын енгізіңіз.', saved: 'Сақталды ✓', deleted: 'Сабақ жойылды',
+    goal: 'Мақсаты', materials: 'Материалдар', safety: 'Қауіпсіздік', steps: 'Тәжірибе қадамдары',
+    gradeN: '{n}-сынып', minutes: '{n} мин', questionsN: '{n} сұрақ',
+    startQuiz: 'Тестті бастау', previewQuiz: 'Тестті алдын ала көру', noQuiz: 'Бұл сабаққа әлі тест қосылмаған.',
+    check: 'Тексеру', answerAll: 'Барлық сұраққа жауап беріңіз (тағы {n} қалды).',
+    yourResult: 'Нәтиже: {c} / {n} — {p}%', gradeLbl: 'Баға',
+    correct: 'Дұрыс', wrong: 'Қате', correctAns: 'Дұрыс жауап: {a}', retry: 'Қайта өту', previewNote: 'Мұғалім режимі: нәтиже сақталмайды.',
+    stepsDone: '{d} / {n} қадам орындалды',
+    quizTitle: 'Тест құрастырғыш', quizSub: 'Сабақты таңдап, автоматты тексерілетін сұрақтар қосыңыз.',
+    addQuestion: 'Сұрақ қосу', question: 'Сұрақ', option: '{n}-нұсқа', correctOpt: 'Дұрыс жауапты белгілеңіз (дөңгелек)',
+    errQ: 'Сұрақты, 4 нұсқаны толтырып, дұрыс жауапты белгілеңіз.', qAdded: 'Сұрақ қосылды ✓', qDeleted: 'Сұрақ жойылды', qList: 'Сұрақтар тізімі',
+    gradesTitle: 'Бағалау журналы', gradesSub: 'Балдарды енгізіңіз — пайыз, баға және сынып статистикасы бірден есептеледі.',
+    settings: 'Бағалау параметрлері', foCount: 'ФБ бағалар саны', max1: 'БЖБ 1 макс. балл', max2: 'БЖБ 2 макс. балл', maxT: 'ТЖБ макс. балл',
+    colStudent: 'Оқушы', colFo: 'ФБ орташа (0–10)', colB1: 'БЖБ 1', colB2: 'БЖБ 2', colT: 'ТЖБ', colPct: 'Тоқсан, %', colGrade: 'Баға',
+    formula: 'Формула: (ФБ + БЖБ) — 50%, ТЖБ — 50%. Шкала: 0–39% → «2», 40–64% → «3», 65–84% → «4», 85–100% → «5». Ережені мектебіңіздің ағымдағы талабымен салыстырыңыз.',
+    invalid: '0 мен {m} аралығындағы сан енгізіңіз',
+    statAvg: 'Сынып орташасы', statPass: 'Үлгерім', statQual: 'Білім сапасы', statN: 'Бағаланған оқушы', statDist: 'Бағалар үлестірімі', statComp: 'Бөлімдер бойынша орташа нәтиже',
+    gradeWord: { 5: '«5» — өте жақсы', 4: '«4» — жақсы', 3: '«3» — қанағаттанарлық', 2: '«2» — қанағаттанарлықсыз' },
+    copyReport: 'Есепті көшіру', copied: 'Көшірілді ✓', copyFail: 'Көшіру мүмкін болмады — мәтінді қолмен белгілеңіз',
+    reportHead: 'STEM факультатив — тоқсандық есеп',
+    resultsTitle: 'Тест нәтижелері', resultsSub: 'Оқушылар тест тапсырған сайын нәтижелер автоматты жаңарады.',
+    avgQuiz: 'Орташа нәтиже', attempts: 'Тапсырғандар', hardest: 'Ең қиын сұрақ', perQ: 'Сұрақтар бойынша дұрыс жауап үлесі', notTaken: '—', table: 'Оқушылар кестесі', qShort: '{n}-сұрақ',
+    fbTitle: 'Жеке кері байланыс', fbSub: 'Оқушыны таңдаңыз — бағалау мен тест нәтижелері бойынша пікір дайындалады.', fbChoose: 'Оқушы', copy: 'Көшіру', fbNoData: 'Бұл оқушының балдары толық емес. «Бағалау» бөлімін толтырыңыз.',
+    comp: { fo: 'формативті бағалау', b1: 'БЖБ 1', b2: 'БЖБ 2', t: 'ТЖБ' },
+    fbIntro: '{name}, тоқсандық нәтижең — {p}% (баға «{g}»).',
+    fbBest: 'Күшті жағың: {c} ({v}%).',
+    fbWeak: 'Жетілдіруді қажет ететін тұс: {c} ({v}%).',
+    fbAdvice: {
+      5: 'Жарайсың! Келесі тоқсанда STEM жобасына немесе олимпиадаға қатысып көр.',
+      4: 'Жақсы нәтиже! {c} бойынша қосымша тапсырмаларды орындасаң, «5»-ке жетесің.',
+      3: '{c} тақырыптарын қайталап, факультативтегі тәжірибелерге белсенді қатыс. Сұрағың болса, кеңес сағатына кел.',
+      2: 'Қосымша сабаққа келуге кеңес беремін. {c} бойынша бірге жеке жоспар құрайық.'
+    },
+    fbQuiz: 'STEM тесттеріндегі орташа нәтижең — {q}%.',
+    fbSign: 'Сәттілік! — Пән мұғалімі',
+    checkTitle: 'Есептеулердің автоматты тексерісі', checkSub: 'ЖИ көмегімен жазылған кодтың дұрыстығын тексеретін тесттер. Әр тест нақты нәтижені күтілген мәнмен салыстырады.',
+    passed: '{p} / {n} тест өтті', runAgain: 'Қайта іске қосу',
+    myTitle: 'Менің нәтижелерім', myEmpty: 'Сен әлі тест тапсырмадың. «Сабақтар» бөлімінен бастап көр!', myAvg: 'Орташа нәтижем',
+    subjects: { physics: 'Физика', chemistry: 'Химия', biology: 'Биология', informatics: 'Информатика', math: 'Математика', robotics: 'Робототехника' }
+  },
+  ru: {
+    appSub: 'Цифровой помощник учителя STEM-факультатива',
+    teacher: 'Учитель', student: 'Ученик', iAm: 'Я:',
+    tabLessons: 'Уроки', tabQuizzes: 'Тесты', tabGrades: 'Оценивание', tabResults: 'Результаты', tabFeedback: 'Обратная связь', tabCheck: 'Проверка', tabMy: 'Мои результаты',
+    demoNote: 'Все имена учеников и данные — демонстрационные.',
+    reset: 'Восстановить демо-данные', resetConfirm: 'Подтвердить: все изменения удалятся', resetDone: 'Демо-данные восстановлены',
+    lessonsTitle: 'STEM-уроки', lessonsSub: 'Создавайте факультативные уроки на основе экспериментов и открывайте их ученикам.',
+    myLessonsSub: 'Открой урок, выполни шаги эксперимента и пройди тест.',
+    newLesson: '+ Новый урок', open: 'Открыть', edit: 'Изменить', del: 'Удалить', confirmDel: 'Подтвердить удаление', cancel: 'Отмена', save: 'Сохранить', back: '← Назад',
+    newLessonTitle: 'Новый урок', editLessonTitle: 'Редактирование урока',
+    fTitle: 'Тема', fSubject: 'Предмет', fGrade: 'Класс', fDuration: 'Длительность (мин)', fGoal: 'Цель урока', fMaterials: 'Материалы (по одному в строке)', fSafety: 'Техника безопасности', fSteps: 'Шаги эксперимента (по одному в строке)',
+    errTitle: 'Введите тему и хотя бы один шаг эксперимента.', saved: 'Сохранено ✓', deleted: 'Урок удалён',
+    goal: 'Цель', materials: 'Материалы', safety: 'Безопасность', steps: 'Шаги эксперимента',
+    gradeN: '{n} класс', minutes: '{n} мин', questionsN: 'Вопросов: {n}',
+    startQuiz: 'Начать тест', previewQuiz: 'Предпросмотр теста', noQuiz: 'К этому уроку ещё не добавлен тест.',
+    check: 'Проверить', answerAll: 'Ответьте на все вопросы (осталось {n}).',
+    yourResult: 'Результат: {c} / {n} — {p}%', gradeLbl: 'Оценка',
+    correct: 'Верно', wrong: 'Неверно', correctAns: 'Правильный ответ: {a}', retry: 'Пройти снова', previewNote: 'Режим учителя: результат не сохраняется.',
+    stepsDone: 'Выполнено шагов: {d} из {n}',
+    quizTitle: 'Конструктор тестов', quizSub: 'Выберите урок и добавьте вопросы с автоматической проверкой.',
+    addQuestion: 'Добавить вопрос', question: 'Вопрос', option: 'Вариант {n}', correctOpt: 'Отметьте правильный ответ (кружок)',
+    errQ: 'Заполните вопрос, 4 варианта и отметьте правильный ответ.', qAdded: 'Вопрос добавлен ✓', qDeleted: 'Вопрос удалён', qList: 'Список вопросов',
+    gradesTitle: 'Журнал оценивания', gradesSub: 'Введите баллы — процент, оценка и статистика класса считаются сразу.',
+    settings: 'Параметры оценивания', foCount: 'Количество ФО', max1: 'СОР 1 макс. балл', max2: 'СОР 2 макс. балл', maxT: 'СОЧ макс. балл',
+    colStudent: 'Ученик', colFo: 'ФО средн. (0–10)', colB1: 'СОР 1', colB2: 'СОР 2', colT: 'СОЧ', colPct: 'Четверть, %', colGrade: 'Оценка',
+    formula: 'Формула: (ФО + СОР) — 50%, СОЧ — 50%. Шкала: 0–39% → «2», 40–64% → «3», 65–84% → «4», 85–100% → «5». Сверьте правило с текущими требованиями вашей школы.',
+    invalid: 'Введите число от 0 до {m}',
+    statAvg: 'Средний по классу', statPass: 'Успеваемость', statQual: 'Качество знаний', statN: 'Оценено учеников', statDist: 'Распределение оценок', statComp: 'Средний результат по разделам',
+    gradeWord: { 5: '«5» — отлично', 4: '«4» — хорошо', 3: '«3» — удовлетворительно', 2: '«2» — неудовлетворительно' },
+    copyReport: 'Скопировать отчёт', copied: 'Скопировано ✓', copyFail: 'Не удалось скопировать — выделите текст вручную',
+    reportHead: 'STEM-факультатив — отчёт за четверть',
+    resultsTitle: 'Результаты тестов', resultsSub: 'Результаты обновляются автоматически, когда ученики проходят тесты.',
+    avgQuiz: 'Средний результат', attempts: 'Прошли', hardest: 'Самый трудный вопрос', perQ: 'Доля верных ответов по вопросам', notTaken: '—', table: 'Таблица учеников', qShort: 'Вопрос {n}',
+    fbTitle: 'Индивидуальная обратная связь', fbSub: 'Выберите ученика — отзыв составится по оценкам и результатам тестов.', fbChoose: 'Ученик', copy: 'Скопировать', fbNoData: 'У этого ученика заполнены не все баллы. Заполните раздел «Оценивание».',
+    comp: { fo: 'формативное оценивание', b1: 'СОР 1', b2: 'СОР 2', t: 'СОЧ' },
+    fbIntro: '{name}, твой результат за четверть — {p}% (оценка «{g}»).',
+    fbBest: 'Сильная сторона: {c} ({v}%).',
+    fbWeak: 'Над чем стоит поработать: {c} ({v}%).',
+    fbAdvice: {
+      5: 'Молодец! В следующей четверти попробуй участвовать в STEM-проекте или олимпиаде.',
+      4: 'Хороший результат! Если выполнишь дополнительные задания по разделу «{c}», выйдешь на «5».',
+      3: 'Повтори темы раздела «{c}» и активнее участвуй в экспериментах на факультативе. Если есть вопросы — приходи на консультацию.',
+      2: 'Рекомендую посещать дополнительные занятия. Давай вместе составим план по разделу «{c}».'
+    },
+    fbQuiz: 'Твой средний результат в STEM-тестах — {q}%.',
+    fbSign: 'Удачи! — Учитель',
+    checkTitle: 'Автоматическая проверка расчётов', checkSub: 'Тесты, проверяющие правильность кода, написанного с помощью ИИ. Каждый тест сравнивает фактический результат с ожидаемым.',
+    passed: 'Пройдено тестов: {p} из {n}', runAgain: 'Запустить снова',
+    myTitle: 'Мои результаты', myEmpty: 'Ты ещё не проходил тесты. Начни с раздела «Уроки»!', myAvg: 'Мой средний результат',
+    subjects: { physics: 'Физика', chemistry: 'Химия', biology: 'Биология', informatics: 'Информатика', math: 'Математика', robotics: 'Робототехника' }
+  }
+};
+const SUBJECT_ICON = { physics: '🚀', chemistry: '🧪', biology: '🌱', informatics: '💡', math: '📐', robotics: '🤖' };
+const SUBJECT_BG = { physics: '#DCE6F2', chemistry: '#F8E5D2', biology: '#DCEFE4', informatics: '#EDE3F5', math: '#F3EBD3', robotics: '#E2E8EC' };
+
+/* ===================== DEMO DATA ===================== */
+const DEMO_STUDENTS = [
+  ['s1', 'Әлия Нұрланқызы', 9.1, 19, 18, 24], ['s2', 'Данияр Серікұлы', 7.5, 14, 15, 17],
+  ['s3', 'Аружан Болатқызы', 8.6, 17, 18, 21], ['s4', 'Темірлан Асқарұлы', 5.2, 8, 9, 10],
+  ['s5', 'Мадина Ерланқызы', 9.4, 20, 19, 23], ['s6', 'Нұрсұлтан Қайратұлы', 6.8, 12, 11, 15],
+  ['s7', 'Жансая Маратқызы', 7.9, 16, 14, 19], ['s8', 'Ерасыл Дәуренұлы', 4.5, 6, 7, 8],
+  ['s9', 'Томирис Ғаниқызы', 8.2, 15, 17, 20], ['s10', 'Арсен Бауыржанұлы', 6.1, 10, 12, 13],
+  ['s11', 'Камила Ринатқызы', 8.8, 18, 16, 22], ['s12', 'Алихан Тимурұлы', 7.2, 13, 14, 16]
+];
+const DEMO_LESSONS = [
+  {
+    id: 'l1', subject: 'physics', grade: 8, duration: 40,
+    title: { kk: 'Ньютонның үшінші заңы: шар-ракета', ru: 'Третий закон Ньютона: ракета из шарика' },
+    goal: { kk: 'Әрекет пен қарсы әрекет заңын тәжірибе арқылы түсіндіру және шардың жылдамдығын есептеу.', ru: 'Объяснить закон действия и противодействия на опыте и рассчитать скорость шарика.' },
+    materials: { kk: ['Үрлемелі шар', 'Жіп (4–5 м)', 'Сусын түтігі', 'Скотч', 'Секундомер, рулетка'], ru: ['Воздушный шарик', 'Нить (4–5 м)', 'Трубочка для напитков', 'Скотч', 'Секундомер, рулетка'] },
+    safety: { kk: 'Шарды тым қатты үрлеме. Жіпті адамдар өтетін жолдан алыс тарт.', ru: 'Не надувай шарик слишком сильно. Натягивай нить вдали от прохода.' },
+    steps: { kk: ['Жіпті екі орындықтың арасына тартып, байла.', 'Түтікті жіпке өткізіп, үрленген шарды түтікке скотчпен бекіт.', 'Шарды босатып, ұшу қашықтығы мен уақытын өлше.', 'Тәжірибені 3 рет қайталап, орташа жылдамдықты v = s / t формуласымен есепте.'], ru: ['Натяни нить между двумя стульями и закрепи.', 'Продень трубочку через нить и приклей к ней надутый шарик скотчем.', 'Отпусти шарик, измерь расстояние и время полёта.', 'Повтори опыт 3 раза и вычисли среднюю скорость по формуле v = s / t.'] },
+    quiz: [
+      { q: { kk: 'Шар-ракетаны алға не итереді?', ru: 'Что толкает шарик-ракету вперёд?' }, opts: { kk: ['Шардан шыққан ауаның қарсы әрекеті', 'Жіптің тартылысы', 'Магнит өрісі', 'Ауырлық күші'], ru: ['Противодействие выходящего воздуха', 'Натяжение нити', 'Магнитное поле', 'Сила тяжести'] }, a: 0 },
+      { q: { kk: 'Ньютонның үшінші заңы нені айтады?', ru: 'О чём третий закон Ньютона?' }, opts: { kk: ['F = m · a', 'Әрекет күші қарсы әрекет күшіне тең және қарама-қарсы бағытталған', 'Дене тыныштық күйін сақтайды', 'Энергия сақталады'], ru: ['F = m · a', 'Сила действия равна силе противодействия и направлена противоположно', 'Тело сохраняет состояние покоя', 'Энергия сохраняется'] }, a: 1 },
+      { q: { kk: 'Орташа жылдамдық қалай есептеледі?', ru: 'Как вычисляется средняя скорость?' }, opts: { kk: ['v = s · t', 'v = t / s', 'v = s / t', 'v = m · a'], ru: ['v = s · t', 'v = t / s', 'v = s / t', 'v = m · a'] }, a: 2 },
+      { q: { kk: 'Шар 4 м қашықтықты 2 секундта ұшты. Орташа жылдамдығы қандай?', ru: 'Шарик пролетел 4 м за 2 секунды. Какова средняя скорость?' }, opts: { kk: ['8 м/с', '2 м/с', '0,5 м/с', '6 м/с'], ru: ['8 м/с', '2 м/с', '0,5 м/с', '6 м/с'] }, a: 1 }
+    ]
+  },
+  {
+    id: 'l2', subject: 'robotics', grade: 9, duration: 45,
+    title: { kk: 'Arduino: жыпылықтайтын жарықдиод', ru: 'Arduino: мигающий светодиод' },
+    goal: { kk: 'Қарапайым электр тізбегін жинап, жарықдиодты бағдарлама арқылы басқару.', ru: 'Собрать простую электрическую цепь и управлять светодиодом программно.' },
+    materials: { kk: ['Arduino Uno және USB кабель', 'Жарықдиод', '220 Ом резистор', 'Макеттік тақта', 'Жалғағыш сымдар'], ru: ['Arduino Uno и USB-кабель', 'Светодиод', 'Резистор 220 Ом', 'Макетная плата', 'Соединительные провода'] },
+    safety: { kk: 'Тізбекті тек USB ажыратулы кезде жина. Жарықдиодты резисторсыз қоспа.', ru: 'Собирай цепь только при отключённом USB. Не подключай светодиод без резистора.' },
+    steps: { kk: ['Жарықдиодтың ұзын аяғын (анод) резистор арқылы 13-пинге қос.', 'Қысқа аяғын (катод) GND-ге қос.', 'Arduino IDE-де pinMode, digitalWrite және delay арқылы код жаз.', 'Кодты жүктеп, delay мәнін өзгертіп, жыпылықтау жиілігін бақыла.'], ru: ['Подключи длинную ножку светодиода (анод) через резистор к пину 13.', 'Короткую ножку (катод) подключи к GND.', 'В Arduino IDE напиши код с pinMode, digitalWrite и delay.', 'Загрузи код, измени значение delay и наблюдай за частотой мигания.'] },
+    quiz: [
+      { q: { kk: 'Резистор не үшін қажет?', ru: 'Зачем нужен резистор?' }, opts: { kk: ['Токты шектеу үшін', 'Кернеуді арттыру үшін', 'Бағдарламаны сақтау үшін', 'Жарықтың түсін өзгерту үшін'], ru: ['Чтобы ограничить ток', 'Чтобы повысить напряжение', 'Чтобы хранить программу', 'Чтобы менять цвет света'] }, a: 0 },
+      { q: { kk: 'delay(1000) қанша уақыт күтеді?', ru: 'Сколько ждёт delay(1000)?' }, opts: { kk: ['1000 секунд', '1 минут', '1 секунд', '0,1 секунд'], ru: ['1000 секунд', '1 минуту', '1 секунду', '0,1 секунды'] }, a: 2 },
+      { q: { kk: 'Жарықдиодтың ұзын аяғы қалай аталады?', ru: 'Как называется длинная ножка светодиода?' }, opts: { kk: ['Катод (−)', 'Анод (+)', 'Резистор', 'Жерге қосу'], ru: ['Катод (−)', 'Анод (+)', 'Резистор', 'Заземление'] }, a: 1 },
+      { q: { kk: '13-пинді шығыс ретінде баптайтын команда:', ru: 'Команда, настраивающая пин 13 как выход:' }, opts: { kk: ['digitalRead(13)', 'pinMode(13, OUTPUT)', 'analogWrite(13)', 'pinMode(13, INPUT)'], ru: ['digitalRead(13)', 'pinMode(13, OUTPUT)', 'analogWrite(13)', 'pinMode(13, INPUT)'] }, a: 1 }
+    ]
+  },
+  {
+    id: 'l3', subject: 'chemistry', grade: 8, duration: 40,
+    title: { kk: 'Лимон батареясы', ru: 'Лимонная батарейка' },
+    goal: { kk: 'Химиялық энергияның электр энергиясына айналуын тәжірибе арқылы көрсету.', ru: 'Показать на опыте превращение химической энергии в электрическую.' },
+    materials: { kk: ['3–4 лимон', 'Мырышталған шегелер', 'Мыс тиындар немесе мыс сым', 'Қысқышы бар сымдар', 'Мультиметр', 'Шағын жарықдиод'], ru: ['3–4 лимона', 'Оцинкованные гвозди', 'Медные монеты или медная проволока', 'Провода с зажимами', 'Мультиметр', 'Маленький светодиод'] },
+    safety: { kk: 'Тәжірибеден кейін лимонды жеме. Өткір шегемен абай бол.', ru: 'Не ешь лимоны после опыта. Осторожно с острыми гвоздями.' },
+    steps: { kk: ['Әр лимонға шеге мен мыс тиынды бір-бірінен алшақ қадап қой.', 'Мультиметрмен бір лимонның кернеуін өлше.', 'Лимондарды тізбектей жалға: мыс → мырыш.', 'Жалпы кернеуді өлшеп, жарықдиодты жағып көр.'], ru: ['Воткни в каждый лимон гвоздь и медную монету на расстоянии друг от друга.', 'Измерь мультиметром напряжение одного лимона.', 'Соедини лимоны последовательно: медь → цинк.', 'Измерь общее напряжение и попробуй зажечь светодиод.'] },
+    quiz: [
+      { q: { kk: 'Лимон шырыны бұл тәжірибеде қандай рөл атқарады?', ru: 'Какую роль играет лимонный сок в опыте?' }, opts: { kk: ['Изолятор', 'Электролит', 'Магнит', 'Жылу көзі'], ru: ['Изолятор', 'Электролит', 'Магнит', 'Источник тепла'] }, a: 1 },
+      { q: { kk: 'Лимондарды тізбектей қосқанда жалпы кернеу:', ru: 'При последовательном соединении лимонов общее напряжение:' }, opts: { kk: ['Азаяды', 'Өзгермейді', 'Қосылады (артады)', 'Нөлге тең болады'], ru: ['Уменьшается', 'Не меняется', 'Складывается (растёт)', 'Становится нулевым'] }, a: 2 },
+      { q: { kk: 'Кернеуді өлшейтін құрал:', ru: 'Прибор для измерения напряжения:' }, opts: { kk: ['Термометр', 'Вольтметр (мультиметр)', 'Динамометр', 'Барометр'], ru: ['Термометр', 'Вольтметр (мультиметр)', 'Динамометр', 'Барометр'] }, a: 1 }
+    ]
+  }
+];
+const DEFAULT_CFG = { foCount: 7, max1: 20, max2: 20, maxT: 25 };
+
+function seeded(seed) { let s = seed >>> 0; return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; }
+function buildDemo() {
+  const students = DEMO_STUDENTS.map(([id, name]) => ({ id, name }));
+  const scores = {};
+  DEMO_STUDENTS.forEach(([id, , fo, b1, b2, t]) => { scores[id] = { fo: String(fo), b1: String(b1), b2: String(b2), t: String(t) }; });
+  const lessons = JSON.parse(JSON.stringify(DEMO_LESSONS));
+  const attempts = {};
+  const rnd = seeded(2026);
+  DEMO_STUDENTS.forEach(([id, , fo, b1, b2, t]) => {
+    const ability = termPct({ fo, b1, b2, t }, DEFAULT_CFG) / 100;
+    lessons.forEach((l, li) => {
+      if (li === 2 && rnd() < 0.35) return; // some students have not taken the newest quiz yet
+      attempts[id + '|' + l.id] = l.quiz.map((q, qi) => {
+        const hard = (li === 0 && qi === 3) || (li === 1 && qi === 2) ? 0.25 : 0;
+        return rnd() < ability - hard + 0.08 ? q.a : (q.a + 1 + Math.floor(rnd() * 3)) % 4;
+      });
+    });
+  });
+  return { students, scores, lessons, attempts, cfg: { ...DEFAULT_CFG }, steps: {} };
+}
+
+/* ===================== STATE ===================== */
+const STORE_KEY = 'smartTeacher.v1';
+let data = load() || buildDemo();
+const ui = { lang: 'kk', role: 'teacher', tab: 'lessons', me: 's3', openLesson: null, editing: null, delArm: null, run: null, quizLesson: 'l1', resLesson: 'l1', fbStudent: 's2', resetArm: false, formErr: '' };
+try { const u = JSON.parse(localStorage.getItem(STORE_KEY + '.ui') || 'null'); if (u) { ui.lang = u.lang || 'kk'; ui.role = u.role || 'teacher'; } } catch (e) {}
+
+function load() { try { const raw = localStorage.getItem(STORE_KEY); return raw ? JSON.parse(raw) : null; } catch (e) { return null; } }
+function persist() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(data)); localStorage.setItem(STORE_KEY + '.ui', JSON.stringify({ lang: ui.lang, role: ui.role })); } catch (e) {}
+}
+
+/* ===================== HELPERS ===================== */
+function t(key, vars) {
+  let s = I18N[ui.lang][key];
+  if (s === undefined) s = I18N.kk[key];
+  if (s === undefined) s = key;
+  if (typeof s === 'string' && vars) for (const k in vars) s = s.split('{' + k + '}').join(vars[k]);
+  return s;
+}
+function L(v) { return v && typeof v === 'object' && !Array.isArray(v) && ('kk' in v || 'ru' in v) ? (v[ui.lang] ?? v.kk) : v; }
+function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+function fmt(n) { return n === null || n === undefined ? '—' : (Math.round(n * 10) / 10).toLocaleString(ui.lang === 'ru' ? 'ru-RU' : 'kk-KZ'); }
+function lessonById(id) { return data.lessons.find(l => l.id === id); }
+function studentName(id) { const s = data.students.find(x => x.id === id); return s ? s.name : ''; }
+function badge(g) { return g ? `<span class="badge g${g}">${g}</span>` : '<span class="sub">—</span>'; }
+function parsedScores(id) {
+  const s = data.scores[id] || {}; const c = data.cfg;
+  return { fo: parseScore(s.fo, 10), b1: parseScore(s.b1, c.max1), b2: parseScore(s.b2, c.max2), t: parseScore(s.t, c.maxT) };
+}
+function studentTerm(id) { const p = termPct(parsedScores(id), data.cfg); return p === null ? null : { p, g: pctToGrade(p) }; }
+function attemptOf(sid, lid) { return data.attempts[sid + '|' + lid]; }
+function quizPct(sid, lid) { const a = attemptOf(sid, lid); const l = lessonById(lid); return a && l && l.quiz.length ? scoreAnswers(l.quiz, a).pct : null; }
+let toastTimer;
+function toast(msg) { const el = document.getElementById('toast'); el.textContent = msg; el.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove('show'), 1800); }
+async function copyText(txt) { try { await navigator.clipboard.writeText(txt); toast(t('copied')); } catch (e) { toast(t('copyFail')); } }
+function uid(p) { return p + Math.random().toString(36).slice(2, 8); }
+
+/* ===================== RENDER: shell ===================== */
+function renderTop() {
+  const roleSeg = `<div class="seg" role="group" aria-label="role">
+    <button data-act="role" data-v="teacher" class="${ui.role === 'teacher' ? 'on' : ''}">${t('teacher')}</button>
+    <button data-act="role" data-v="student" class="${ui.role === 'student' ? 'on' : ''}">${t('student')}</button></div>`;
+  const langSeg = `<div class="seg" role="group" aria-label="language">
+    <button data-act="lang" data-v="kk" class="${ui.lang === 'kk' ? 'on' : ''}">ҚАЗ</button>
+    <button data-act="lang" data-v="ru" class="${ui.lang === 'ru' ? 'on' : ''}">РУС</button></div>`;
+  const who = ui.role === 'student' ? `<label class="who">${t('iAm')} <select data-act="me">${data.students.map(s => `<option value="${s.id}" ${s.id === ui.me ? 'selected' : ''}>${esc(s.name)}</option>`).join('')}</select></label>` : '';
+  document.getElementById('topbar').innerHTML = `
+    <div class="brand"><div class="logo" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#14213D" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.7 3h10.6a2 2 0 0 0 1.7-3l-5-9V3"/><path d="M7.5 15h9"/></svg></div>
+      <div><div class="brand-name">Smart Teacher</div><div class="brand-sub">${t('appSub')}</div></div></div>
+    ${who}${roleSeg}${langSeg}`;
+  document.documentElement.lang = ui.lang === 'ru' ? 'ru' : 'kk';
+}
+function tabsFor() {
+  return ui.role === 'teacher'
+    ? [['lessons', 'tabLessons'], ['quizzes', 'tabQuizzes'], ['grades', 'tabGrades'], ['results', 'tabResults'], ['feedback', 'tabFeedback'], ['check', 'tabCheck']]
+    : [['lessons', 'tabLessons'], ['my', 'tabMy']];
+}
+function renderTabs() {
+  document.getElementById('tabs').innerHTML = tabsFor().map(([id, k]) =>
+    `<button class="tab ${ui.tab === id ? 'on' : ''}" data-act="tab" data-v="${id}">${t(k)}</button>`).join('');
+}
+function renderFoot() {
+  document.getElementById('foot').innerHTML = `<span>🛈 ${t('demoNote')}</span>
+    <button class="btn ${ui.resetArm ? 'danger' : 'ghost'} sm" data-act="reset">${ui.resetArm ? t('resetConfirm') : t('reset')}</button>`;
+}
+function render() {
+  if (!tabsFor().some(([id]) => id === ui.tab)) ui.tab = 'lessons';
+  renderTop(); renderTabs(); renderFoot();
+  const v = document.getElementById('view');
+  const views = { lessons: viewLessons, quizzes: viewQuizzes, grades: viewGrades, results: viewResults, feedback: viewFeedback, check: viewCheck, my: viewMy };
+  v.innerHTML = (views[ui.tab] || viewLessons)();
+  if (ui.tab === 'grades') updateGradeCalcs();
+}
+
+/* ===================== VIEW: lessons ===================== */
+function viewLessons() {
+  if (ui.run) return viewQuizRun();
+  if (ui.editing) return viewLessonForm();
+  if (ui.openLesson) return viewLessonDetail(lessonById(ui.openLesson));
+  const teacher = ui.role === 'teacher';
+  const cards = data.lessons.map(l => {
+    const qp = !teacher ? quizPct(ui.me, l.id) : null;
+    return `<article class="card lesson-card">
+      <div class="row" style="justify-content:space-between;">
+        <div class="lc-icon" style="background:${SUBJECT_BG[l.subject] || '#E2E8EC'}" aria-hidden="true">${SUBJECT_ICON[l.subject] || '🔬'}</div>
+        <div class="row"><span class="chip">${esc(t('subjects')[l.subject] || l.subject)}</span><span class="chip o">${t('gradeN', { n: esc(l.grade) })}</span></div>
+      </div>
+      <h3>${esc(L(l.title))}</h3>
+      <p class="goal">${esc(L(l.goal))}</p>
+      <div class="row sub" style="font-size:14px;">⏱ ${t('minutes', { n: esc(l.duration) })} · ❓ ${t('questionsN', { n: l.quiz.length })}${qp !== null ? ` · <span class="chip g">${fmt(qp)}%</span>` : ''}</div>
+      <div class="row">
+        <button class="btn sm" data-act="openLesson" data-v="${l.id}">${t('open')}</button>
+        ${teacher ? `<button class="btn ghost sm" data-act="editLesson" data-v="${l.id}">${t('edit')}</button>
+        <button class="btn ${ui.delArm === l.id ? 'danger' : 'ghost'} sm" data-act="delLesson" data-v="${l.id}">${ui.delArm === l.id ? t('confirmDel') : t('del')}</button>` : ''}
+      </div></article>`;
+  }).join('');
+  return `<div class="head-row"><div><h2>${t('lessonsTitle')}</h2><p class="sub">${teacher ? t('lessonsSub') : t('myLessonsSub')}</p></div>
+    ${teacher ? `<button class="btn orange" data-act="newLesson">${t('newLesson')}</button>` : ''}</div>
+    <div class="grid">${cards}</div>`;
+}
+function viewLessonDetail(l) {
+  if (!l) { ui.openLesson = null; return viewLessons(); }
+  const steps = L(l.steps) || [];
+  const key = ui.me + '|' + l.id;
+  const done = new Set(ui.role === 'student' ? (data.steps[key] || []) : []);
+  const pct = steps.length ? Math.round(done.size / steps.length * 100) : 0;
+  const stepHtml = steps.map((s, i) => ui.role === 'student'
+    ? `<label class="step ${done.has(i) ? 'done' : ''}"><input type="checkbox" data-act="step" data-v="${i}" ${done.has(i) ? 'checked' : ''}><span><b>${i + 1}.</b> ${esc(s)}</span></label>`
+    : `<div class="step" style="cursor:default;"><span><b>${i + 1}.</b> ${esc(s)}</span></div>`).join('');
+  return `<div class="head-row"><div><button class="btn ghost sm" data-act="closeLesson">${t('back')}</button></div></div>
+    <div class="card" style="margin-bottom:16px;">
+      <div class="row" style="margin-bottom:8px;"><span class="chip">${esc(t('subjects')[l.subject] || l.subject)}</span><span class="chip o">${t('gradeN', { n: esc(l.grade) })}</span><span class="chip g">⏱ ${t('minutes', { n: esc(l.duration) })}</span></div>
+      <h2>${esc(L(l.title))}</h2>
+      <p><b>${t('goal')}:</b> ${esc(L(l.goal))}</p>
+    </div>
+    <div class="two">
+      <div class="card"><h3>🧰 ${t('materials')}</h3><ul class="clean">${(L(l.materials) || []).map(m => `<li>${esc(m)}</li>`).join('')}</ul>
+        ${L(l.safety) ? `<div class="callout" style="margin-top:14px;"><b>⚠️ ${t('safety')}:</b> ${esc(L(l.safety))}</div>` : ''}</div>
+      <div class="card"><h3>🔬 ${t('steps')}</h3>
+        ${ui.role === 'student' ? `<div class="row" style="margin-bottom:10px; justify-content:space-between;"><span class="sub">${t('stepsDone', { d: done.size, n: steps.length })}</span></div><div class="progress" style="margin-bottom:12px;"><div style="width:${pct}%"></div></div>` : ''}
+        ${stepHtml}
+        <div style="margin-top:12px;">${l.quiz.length ? `<button class="btn orange" data-act="startQuiz" data-v="${l.id}">${ui.role === 'student' ? t('startQuiz') : t('previewQuiz')}</button>` : `<p class="sub">${t('noQuiz')}</p>`}</div>
+      </div>
+    </div>`;
+}
+function viewLessonForm() {
+  const e = ui.editing; // {id|null, draft}
+  const d = e.draft;
+  const subjOpts = Object.keys(I18N.kk.subjects).map(k => `<option value="${k}" ${d.subject === k ? 'selected' : ''}>${esc(t('subjects')[k])}</option>`).join('');
+  return `<div class="head-row"><div><button class="btn ghost sm" data-act="cancelEdit">${t('back')}</button></div></div>
+    <form class="card" id="lessonForm" style="max-width:820px;">
+      <h2>${e.id ? t('editLessonTitle') : t('newLessonTitle')}</h2>
+      <label class="f" for="fTitle">${t('fTitle')}</label><input type="text" id="fTitle" value="${esc(d.title)}" maxlength="120">
+      <div class="settings" style="margin-top:4px;">
+        <div><label class="f" for="fSubject">${t('fSubject')}</label><select class="in" id="fSubject">${subjOpts}</select></div>
+        <div><label class="f" for="fGrade">${t('fGrade')}</label><input type="number" id="fGrade" min="1" max="11" value="${esc(d.grade)}"></div>
+        <div><label class="f" for="fDuration">${t('fDuration')}</label><input type="number" id="fDuration" min="10" max="180" value="${esc(d.duration)}"></div>
+      </div>
+      <label class="f" for="fGoal">${t('fGoal')}</label><textarea id="fGoal" style="min-height:64px;">${esc(d.goal)}</textarea>
+      <label class="f" for="fMaterials">${t('fMaterials')}</label><textarea id="fMaterials">${esc(d.materials)}</textarea>
+      <label class="f" for="fSafety">${t('fSafety')}</label><textarea id="fSafety" style="min-height:64px;">${esc(d.safety)}</textarea>
+      <label class="f" for="fSteps">${t('fSteps')}</label><textarea id="fSteps" style="min-height:120px;">${esc(d.steps)}</textarea>
+      ${ui.formErr ? `<p class="err" role="alert">${ui.formErr}</p>` : ''}
+      <div class="row" style="margin-top:16px;"><button class="btn orange" type="submit">${t('save')}</button><button class="btn ghost" type="button" data-act="cancelEdit">${t('cancel')}</button></div>
+    </form>`;
+}
+
+/* ===================== VIEW: quiz run ===================== */
+function viewQuizRun() {
+  const r = ui.run; const l = lessonById(r.lid);
+  if (!l) { ui.run = null; return viewLessons(); }
+  let res = '';
+  if (r.done) {
+    const sc = scoreAnswers(l.quiz, r.answers); const g = pctToGrade(sc.pct);
+    res = `<div class="card" style="margin-bottom:16px; border-color:${g >= 4 ? '#B6DCC6' : '#E8C4A6'};">
+      <div class="row" style="justify-content:space-between;"><h2 style="margin:0;">${t('yourResult', { c: sc.correct, n: sc.total, p: fmt(sc.pct) })}</h2>
+      <div class="row"><span class="sub">${t('gradeLbl')}:</span> ${badge(g)} <span class="sub">${t('gradeWord')[g]}</span></div></div>
+      ${ui.role === 'teacher' ? `<p class="note">${t('previewNote')}</p>` : ''}</div>`;
+  }
+  const qs = l.quiz.map((q, i) => {
+    const opts = L(q.opts).map((o, j) => {
+      let cls = '';
+      if (r.done) { if (j === q.a) cls = 'ok'; else if (r.answers[i] === j) cls = 'bad'; }
+      return `<label class="opt ${cls}"><input type="radio" name="q${i}" data-act="ans" data-q="${i}" data-v="${j}" ${r.answers[i] === j ? 'checked' : ''} ${r.done ? 'disabled' : ''}> <span>${esc(o)}</span></label>`;
+    }).join('');
+    const verdict = r.done ? (r.answers[i] === q.a ? `<p class="verdict ok">✓ ${t('correct')}</p>` : `<p class="verdict bad">✗ ${t('wrong')}. ${esc(t('correctAns', { a: L(q.opts)[q.a] }))}</p>`) : '';
+    return `<div class="q"><p class="q-t">${i + 1}. ${esc(L(q.q))}</p>${opts}${verdict}</div>`;
+  }).join('');
+  const missing = l.quiz.length - r.answers.filter(a => a !== undefined && a !== null).length;
+  return `<div class="head-row"><div><button class="btn ghost sm" data-act="closeRun">${t('back')}</button></div></div>
+    <h2 style="margin-bottom:14px;">${esc(L(l.title))}</h2>${res}
+    <div style="max-width:820px;">${qs}
+      ${r.done ? `<button class="btn" data-act="retry">${t('retry')}</button>` : `${r.err ? `<p class="err" role="alert">${t('answerAll', { n: missing })}</p>` : ''}<button class="btn orange" data-act="submitQuiz">${t('check')}</button>`}
+    </div>`;
+}
+
+/* ===================== VIEW: quiz builder ===================== */
+function viewQuizzes() {
+  const l = lessonById(ui.quizLesson) || data.lessons[0];
+  if (!l) return `<p class="empty">—</p>`;
+  ui.quizLesson = l.id;
+  const sel = data.lessons.map(x => `<option value="${x.id}" ${x.id === l.id ? 'selected' : ''}>${esc(L(x.title))}</option>`).join('');
+  const list = l.quiz.length ? l.quiz.map((q, i) => `<div class="q"><div class="row" style="justify-content:space-between; align-items:flex-start;">
+      <p class="q-t" style="flex:1;">${i + 1}. ${esc(L(q.q))}</p><button class="btn ghost sm" data-act="delQ" data-v="${i}">${t('del')}</button></div>
+      <ul class="clean">${L(q.opts).map((o, j) => `<li>${j === q.a ? `<b style="color:var(--green);">✓ ${esc(o)}</b>` : esc(o)}</li>`).join('')}</ul></div>`).join('')
+    : `<p class="sub">${t('noQuiz')}</p>`;
+  return `<div class="head-row"><div><h2>${t('quizTitle')}</h2><p class="sub">${t('quizSub')}</p></div>
+      <select class="in" data-act="quizLesson" style="max-width:380px;">${sel}</select></div>
+    <div class="two">
+      <div><h3>${t('qList')} (${l.quiz.length})</h3>${list}</div>
+      <form class="card" id="qForm"><h3>${t('addQuestion')}</h3>
+        <label class="f" for="qText">${t('question')}</label><input type="text" id="qText" maxlength="200">
+        <p class="note" style="margin-top:12px;">${t('correctOpt')}</p>
+        ${[0, 1, 2, 3].map(j => `<div class="row" style="margin-top:8px; flex-wrap:nowrap;"><input type="radio" name="qCorrect" value="${j}" aria-label="${t('option', { n: j + 1 })}" style="width:18px;height:18px;accent-color:var(--green);">
+          <input type="text" id="qOpt${j}" placeholder="${t('option', { n: j + 1 })}" maxlength="120"></div>`).join('')}
+        ${ui.formErr ? `<p class="err" role="alert">${t('errQ')}</p>` : ''}
+        <button class="btn orange" type="submit" style="margin-top:14px;">${t('addQuestion')}</button>
+      </form>
+    </div>`;
+}
+
+/* ===================== VIEW: grades ===================== */
+function viewGrades() {
+  const c = data.cfg;
+  const rows = data.students.map(s => {
+    const sc = data.scores[s.id] || {};
+    const inp = (k, max, step) => `<input class="score-in" inputmode="decimal" data-act="score" data-sid="${s.id}" data-k="${k}" data-max="${max}" value="${esc(sc[k] ?? '')}" aria-label="${esc(s.name)} ${k}" step="${step}">`;
+    return `<tr><td>${esc(s.name)}</td>
+      <td class="num">${inp('fo', 10, 0.1)}</td><td class="num">${inp('b1', c.max1, 1)}</td><td class="num">${inp('b2', c.max2, 1)}</td><td class="num">${inp('t', c.maxT, 1)}</td>
+      <td class="num" id="pct-${s.id}">—</td><td class="num" id="gr-${s.id}">—</td></tr>`;
+  }).join('');
+  const cfgIn = (k, min, max) => `<div><label for="cfg-${k}">${t(k)}</label><input type="number" id="cfg-${k}" data-act="cfg" data-k="${k}" min="${min}" max="${max}" value="${c[k]}"></div>`;
+  return `<div class="head-row"><div><h2>${t('gradesTitle')}</h2><p class="sub">${t('gradesSub')}</p></div>
+      <button class="btn ghost" data-act="copyReport">📋 ${t('copyReport')}</button></div>
+    <div class="card" style="margin-bottom:16px;"><h3>⚙️ ${t('settings')}</h3>
+      <div class="settings">${cfgIn('foCount', 1, 30)}${cfgIn('max1', 1, 100)}${cfgIn('max2', 1, 100)}${cfgIn('maxT', 1, 100)}</div>
+      <p class="note">${t('formula')}</p></div>
+    <div id="kpis" class="kpis" style="margin-bottom:16px;"></div>
+    <div class="two" style="margin-bottom:16px;">
+      <div class="card"><h3>${t('statDist')}</h3><div id="dist" class="bars wide"></div></div>
+      <div class="card"><h3>${t('statComp')}</h3><div id="comp" class="bars"></div></div>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>${t('colStudent')}</th><th class="num">${t('colFo')}</th><th class="num">${t('colB1')} / ${c.max1}</th><th class="num">${t('colB2')} / ${c.max2}</th><th class="num">${t('colT')} / ${c.maxT}</th><th class="num">${t('colPct')}</th><th class="num">${t('colGrade')}</th></tr></thead>
+      <tbody>${rows}</tbody></table></div>`;
+}
+const GRADE_COLORS = { 5: '#23845A', 4: '#2F6FB3', 3: '#E07A2F', 2: '#B83A2E' };
+function gradeSummary() {
+  const terms = data.students.map(s => studentTerm(s.id)).filter(Boolean);
+  const st = classStats(terms.map(x => x.g));
+  const avg = terms.length ? round1(terms.reduce((a, x) => a + x.p, 0) / terms.length) : null;
+  const comps = ['fo', 'b1', 'b2', 't'].map(k => {
+    const max = k === 'fo' ? 10 : data.cfg[{ b1: 'max1', b2: 'max2', t: 'maxT' }[k]];
+    const vals = data.students.map(s => parsedScores(s.id)[k]).filter(v => v !== null);
+    return { k, v: vals.length ? round1(vals.reduce((a, b) => a + b, 0) / vals.length / max * 100) : null };
+  });
+  return { st, avg, comps };
+}
+function updateGradeCalcs() {
+  data.students.forEach(s => {
+    const r = studentTerm(s.id);
+    const pc = document.getElementById('pct-' + s.id), gr = document.getElementById('gr-' + s.id);
+    if (pc) pc.textContent = r ? fmt(r.p) + '%' : '—';
+    if (gr) gr.innerHTML = r ? badge(r.g) : '—';
+  });
+  document.querySelectorAll('.score-in').forEach(inp => {
+    const max = Number(inp.dataset.max); const raw = inp.value;
+    const bad = raw.trim() !== '' && parseScore(raw, max) === null;
+    inp.classList.toggle('invalid', bad);
+    inp.title = bad ? t('invalid', { m: max }) : '';
+    inp.setAttribute('aria-invalid', bad ? 'true' : 'false');
+  });
+  const { st, avg, comps } = gradeSummary();
+  const k = document.getElementById('kpis');
+  if (k) k.innerHTML = [
+    [t('statAvg'), avg === null ? '—' : fmt(avg) + '%'], [t('statPass'), fmt(st.pass) + '%'], [t('statQual'), fmt(st.qual) + '%'], [t('statN'), st.n + ' / ' + data.students.length]
+  ].map(([l, v]) => `<div class="kpi"><div class="kpi-l">${l}</div><div class="kpi-v">${v}</div></div>`).join('');
+  const d = document.getElementById('dist');
+  if (d) d.innerHTML = [5, 4, 3, 2].map(g => {
+    const n = st.dist[g]; const w = st.n ? n / st.n * 100 : 0;
+    return `<div class="bar-row"><span>${t('gradeWord')[g].split(' — ')[0]} <span class="sub">${t('gradeWord')[g].split(' — ')[1]}</span></span><div class="bar-track"><div class="bar-fill" style="width:${w}%; background:${GRADE_COLORS[g]};"></div></div><span class="bar-v">${n}</span></div>`;
+  }).join('');
+  const cp = document.getElementById('comp');
+  if (cp) cp.innerHTML = comps.map(x => `<div class="bar-row"><span>${esc(cap(t('comp')[x.k]))}</span><div class="bar-track"><div class="bar-fill" style="width:${x.v || 0}%; background:#2F6FB3;"></div></div><span class="bar-v">${x.v === null ? '—' : fmt(x.v) + '%'}</span></div>`).join('');
+}
+function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+function reportText() {
+  const { st, avg, comps } = gradeSummary();
+  const lines = [t('reportHead'), '',
+    `${t('statAvg')}: ${avg === null ? '—' : fmt(avg) + '%'}`, `${t('statPass')}: ${fmt(st.pass)}%`, `${t('statQual')}: ${fmt(st.qual)}%`, `${t('statN')}: ${st.n} / ${data.students.length}`, '',
+    t('statDist') + ':', ...[5, 4, 3, 2].map(g => `  ${t('gradeWord')[g]}: ${st.dist[g]}`), '',
+    t('statComp') + ':', ...comps.map(x => `  ${cap(t('comp')[x.k])}: ${x.v === null ? '—' : fmt(x.v) + '%'}`), '',
+    `${t('colStudent')} — ${t('colPct')} — ${t('colGrade')}`,
+    ...data.students.map(s => { const r = studentTerm(s.id); return `  ${s.name} — ${r ? fmt(r.p) + '%' : '—'} — ${r ? r.g : '—'}`; })];
+  return lines.join('\n');
+}
+
+/* ===================== VIEW: results ===================== */
+function quizStats(l) {
+  const taken = data.students.filter(s => attemptOf(s.id, l.id));
+  const pcts = taken.map(s => quizPct(s.id, l.id));
+  const avg = pcts.length ? round1(pcts.reduce((a, b) => a + b, 0) / pcts.length) : null;
+  const perQ = l.quiz.map((q, i) => { const ok = taken.filter(s => attemptOf(s.id, l.id)[i] === q.a).length; return taken.length ? round1(ok / taken.length * 100) : null; });
+  let hardest = -1; perQ.forEach((v, i) => { if (v !== null && (hardest < 0 || v < perQ[hardest])) hardest = i; });
+  return { n: taken.length, avg, perQ, hardest };
+}
+function viewResults() {
+  const l = lessonById(ui.resLesson) || data.lessons[0];
+  if (!l) return `<p class="empty">—</p>`;
+  ui.resLesson = l.id;
+  const chips = data.lessons.map(x => `<button class="btn ${x.id === l.id ? '' : 'ghost'} sm" data-act="resLesson" data-v="${x.id}">${esc(L(x.title))}</button>`).join('');
+  const s = quizStats(l);
+  const bars = l.quiz.map((q, i) => `<div class="bar-row" title="${esc(L(q.q))}"><span>${t('qShort', { n: i + 1 })}</span><div class="bar-track"><div class="bar-fill" style="width:${s.perQ[i] || 0}%; background:${i === s.hardest ? '#E07A2F' : '#2F6FB3'};"></div></div><span class="bar-v">${s.perQ[i] === null ? '—' : fmt(s.perQ[i]) + '%'}</span></div>`).join('');
+  const rows = data.students.map(st => {
+    const p = quizPct(st.id, l.id); const term = studentTerm(st.id);
+    return `<tr><td>${esc(st.name)}</td><td class="num">${p === null ? t('notTaken') : fmt(p) + '%'}</td><td class="num">${p === null ? '—' : badge(pctToGrade(p))}</td><td class="num">${data.lessons.map(x => { const v = quizPct(st.id, x.id); return v === null ? '·' : fmt(v); }).join(' / ')}</td><td class="num">${term ? badge(term.g) : '—'}</td></tr>`;
+  }).join('');
+  return `<div class="head-row"><div><h2>${t('resultsTitle')}</h2><p class="sub">${t('resultsSub')}</p></div></div>
+    <div class="row" style="margin-bottom:16px;">${chips}</div>
+    <div class="kpis" style="margin-bottom:16px;">
+      <div class="kpi"><div class="kpi-l">${t('avgQuiz')}</div><div class="kpi-v">${s.avg === null ? '—' : fmt(s.avg) + '%'}</div></div>
+      <div class="kpi"><div class="kpi-l">${t('attempts')}</div><div class="kpi-v">${s.n} / ${data.students.length}</div></div>
+      <div class="kpi" style="grid-column: span 2;"><div class="kpi-l">${t('hardest')}</div><div style="font-weight:700; margin-top:6px;">${s.hardest >= 0 ? `${s.hardest + 1}. ${esc(L(l.quiz[s.hardest].q))} — <span style="color:var(--rust);">${fmt(s.perQ[s.hardest])}%</span>` : '—'}</div></div>
+    </div>
+    <div class="two">
+      <div class="card"><h3>${t('perQ')}</h3><div class="bars">${bars || `<p class="sub">${t('noQuiz')}</p>`}</div></div>
+      <div class="table-wrap"><table><thead><tr><th>${t('colStudent')}</th><th class="num">%</th><th class="num">${t('colGrade')}</th><th class="num">${data.lessons.map((x, i) => i + 1).join(' / ')}</th><th class="num">${t('colPct').split(',')[0]}</th></tr></thead><tbody>${rows}</tbody></table></div>
+    </div>`;
+}
+
+/* ===================== VIEW: feedback ===================== */
+function feedbackText(sid) {
+  const ps = parsedScores(sid); const term = studentTerm(sid);
+  if (!term) return null;
+  const c = data.cfg;
+  const parts = { fo: ps.fo / 10 * 100, b1: ps.b1 / c.max1 * 100, b2: ps.b2 / c.max2 * 100, t: ps.t / c.maxT * 100 };
+  const keys = Object.keys(parts);
+  const best = keys.reduce((a, b) => parts[b] > parts[a] ? b : a);
+  const weak = keys.reduce((a, b) => parts[b] < parts[a] ? b : a);
+  const first = studentName(sid).split(' ')[0];
+  const quizVals = data.lessons.map(l => quizPct(sid, l.id)).filter(v => v !== null);
+  const qAvg = quizVals.length ? round1(quizVals.reduce((a, b) => a + b, 0) / quizVals.length) : null;
+  const lines = [
+    t('fbIntro', { name: first, p: fmt(term.p), g: term.g }),
+    t('fbBest', { c: t('comp')[best], v: fmt(round1(parts[best])) })
+  ];
+  if (weak !== best) lines.push(t('fbWeak', { c: t('comp')[weak], v: fmt(round1(parts[weak])) }));
+  if (qAvg !== null) lines.push(t('fbQuiz', { q: fmt(qAvg) }));
+  lines.push(t('fbAdvice')[term.g].split('{c}').join(t('comp')[weak]));
+  lines.push('', t('fbSign'));
+  return lines.join('\n');
+}
+function viewFeedback() {
+  const opts = data.students.map(s => { const r = studentTerm(s.id); return `<option value="${s.id}" ${s.id === ui.fbStudent ? 'selected' : ''}>${esc(s.name)}${r ? ' — ' + r.g : ''}</option>`; }).join('');
+  const txt = feedbackText(ui.fbStudent);
+  return `<div class="head-row"><div><h2>${t('fbTitle')}</h2><p class="sub">${t('fbSub')}</p></div></div>
+    <div class="card" style="max-width:820px;">
+      <label class="f" for="fbSel" style="margin-top:0;">${t('fbChoose')}</label>
+      <select class="in" id="fbSel" data-act="fbStudent">${opts}</select>
+      <div class="fb-box" style="margin-top:14px;" id="fbBox">${txt === null ? `<span class="sub">${t('fbNoData')}</span>` : esc(txt)}</div>
+      <div class="row" style="margin-top:12px;"><button class="btn orange" data-act="copyFb" ${txt === null ? 'disabled' : ''}>📋 ${t('copy')}</button></div>
+    </div>`;
+}
+
+/* ===================== VIEW: self-check ===================== */
+function selfTests() {
+  const sampleQuiz = [{ a: 0 }, { a: 2 }, { a: 1 }, { a: 3 }];
+  return [
+    ['pctToGrade(0) → 2', () => pctToGrade(0) === 2],
+    ['pctToGrade(39.9) → 2', () => pctToGrade(39.9) === 2],
+    ['pctToGrade(40) → 3', () => pctToGrade(40) === 3],
+    ['pctToGrade(64.9) → 3', () => pctToGrade(64.9) === 3],
+    ['pctToGrade(65) → 4', () => pctToGrade(65) === 4],
+    ['pctToGrade(84.9) → 4', () => pctToGrade(84.9) === 4],
+    ['pctToGrade(85) → 5', () => pctToGrade(85) === 5],
+    ['pctToGrade(100) → 5', () => pctToGrade(100) === 5],
+    ['termPct: informburo.kz мысалы / пример → 85%', () => termPct({ fo: 59 / 7, b1: 15, b2: 14, t: 18 }, { foCount: 7, max1: 20, max2: 20, maxT: 20 }) === 85],
+    ['termPct: max → 100%', () => termPct({ fo: 10, b1: 20, b2: 20, t: 25 }, DEFAULT_CFG) === 100],
+    ['termPct: 0 → 0%', () => termPct({ fo: 0, b1: 0, b2: 0, t: 0 }, DEFAULT_CFG) === 0],
+    ['termPct: бос / пусто → null', () => termPct({ fo: 8, b1: null, b2: 10, t: 10 }, DEFAULT_CFG) === null],
+    ["parseScore('21', 20) → null", () => parseScore('21', 20) === null],
+    ["parseScore('-1', 20) → null", () => parseScore('-1', 20) === null],
+    ["parseScore('abc', 20) → null", () => parseScore('abc', 20) === null],
+    ["parseScore('7,5', 10) → 7.5", () => parseScore('7,5', 10) === 7.5],
+    ['scoreAnswers: 4/4 → 100%', () => scoreAnswers(sampleQuiz, [0, 2, 1, 3]).pct === 100],
+    ['scoreAnswers: 1/4 → 25%', () => scoreAnswers(sampleQuiz, [0, 0, 0, 0]).pct === 25],
+    ['scoreAnswers: [] → 0%', () => scoreAnswers(sampleQuiz, []).pct === 0],
+    ['classStats([5,4,3,2]) → 75% / 50%', () => { const s = classStats([5, 4, 3, 2]); return s.pass === 75 && s.qual === 50; }],
+    ['classStats([]) → 0', () => classStats([]).n === 0]
+  ];
+}
+function viewCheck() {
+  const res = selfTests().map(([name, fn]) => { let ok = false; try { ok = fn() === true; } catch (e) { ok = false; } return { name, ok }; });
+  const p = res.filter(r => r.ok).length;
+  return `<div class="head-row"><div><h2>${t('checkTitle')}</h2><p class="sub">${t('checkSub')}</p></div>
+      <button class="btn ghost" data-act="rerun">↻ ${t('runAgain')}</button></div>
+    <div class="kpis" style="margin-bottom:16px;"><div class="kpi"><div class="kpi-l">✓</div><div class="kpi-v" style="color:${p === res.length ? 'var(--green)' : 'var(--red)'};">${t('passed', { p, n: res.length })}</div></div></div>
+    <div class="card" style="padding:4px 6px;">${res.map(r => `<div class="test-row"><span class="${r.ok ? 'pass' : 'fail'}">${r.ok ? '✓ PASS' : '✗ FAIL'}</span><code>${esc(r.name)}</code></div>`).join('')}</div>`;
+}
+
+/* ===================== VIEW: student results ===================== */
+function viewMy() {
+  const rows = data.lessons.map(l => ({ l, p: quizPct(ui.me, l.id) })).filter(x => x.p !== null);
+  if (!rows.length) return `<div class="head-row"><div><h2>${t('myTitle')}</h2></div></div><div class="card empty">${t('myEmpty')}</div>`;
+  const avg = round1(rows.reduce((a, x) => a + x.p, 0) / rows.length);
+  return `<div class="head-row"><div><h2>${t('myTitle')}</h2><p class="sub">${esc(studentName(ui.me))}</p></div></div>
+    <div class="kpis" style="margin-bottom:16px;"><div class="kpi"><div class="kpi-l">${t('myAvg')}</div><div class="kpi-v">${fmt(avg)}%</div></div>
+      <div class="kpi"><div class="kpi-l">${t('gradeLbl')}</div><div class="kpi-v">${badge(pctToGrade(avg))}</div></div></div>
+    <div class="card"><div class="bars">${rows.map(x => `<div class="bar-row" style="grid-template-columns: minmax(140px, 1.2fr) 2fr 70px;"><span>${esc(L(x.l.title))}</span><div class="bar-track"><div class="bar-fill" style="width:${x.p}%; background:${GRADE_COLORS[pctToGrade(x.p)]};"></div></div><span class="bar-v">${fmt(x.p)}%</span></div>`).join('')}</div></div>`;
+}
+
+/* ===================== EVENTS ===================== */
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-act]');
+  if (!el || el.tagName === 'SELECT' || (el.tagName === 'INPUT' && el.type !== 'checkbox' && el.type !== 'radio')) return;
+  const a = el.dataset.act, v = el.dataset.v;
+  if (a !== 'reset') ui.resetArm = false;
+  if (a !== 'delLesson') ui.delArm = null;
+  switch (a) {
+    case 'lang': ui.lang = v; persist(); render(); break;
+    case 'role': ui.role = v; ui.tab = 'lessons'; ui.openLesson = null; ui.run = null; ui.editing = null; persist(); render(); break;
+    case 'tab': ui.tab = v; ui.openLesson = null; ui.run = null; ui.editing = null; ui.formErr = ''; render(); window.scrollTo(0, 0); break;
+    case 'openLesson': ui.openLesson = v; render(); window.scrollTo(0, 0); break;
+    case 'closeLesson': ui.openLesson = null; render(); break;
+    case 'newLesson': ui.formErr = ''; ui.editing = { id: null, draft: { title: '', subject: 'physics', grade: 8, duration: 40, goal: '', materials: '', safety: '', steps: '' } }; render(); break;
+    case 'editLesson': {
+      const l = lessonById(v); ui.formErr = '';
+      ui.editing = { id: v, draft: { title: L(l.title), subject: l.subject, grade: l.grade, duration: l.duration, goal: L(l.goal), materials: (L(l.materials) || []).join('\n'), safety: L(l.safety), steps: (L(l.steps) || []).join('\n') } };
+      render(); window.scrollTo(0, 0); break;
+    }
+    case 'cancelEdit': ui.editing = null; ui.formErr = ''; render(); break;
+    case 'delLesson':
+      if (ui.delArm === v) {
+        data.lessons = data.lessons.filter(l => l.id !== v);
+        Object.keys(data.attempts).forEach(k => { if (k.endsWith('|' + v)) delete data.attempts[k]; });
+        ui.delArm = null; persist(); toast(t('deleted'));
+      } else ui.delArm = v;
+      render(); break;
+    case 'startQuiz': ui.run = { lid: v, answers: [], done: false, err: false }; render(); window.scrollTo(0, 0); break;
+    case 'closeRun': ui.run = null; render(); break;
+    case 'retry': ui.run = { lid: ui.run.lid, answers: [], done: false, err: false }; render(); window.scrollTo(0, 0); break;
+    case 'submitQuiz': {
+      const l = lessonById(ui.run.lid);
+      const answered = l.quiz.every((q, i) => Number.isInteger(ui.run.answers[i]));
+      if (!answered) { ui.run.err = true; render(); break; }
+      ui.run.done = true; ui.run.err = false;
+      if (ui.role === 'student') { data.attempts[ui.me + '|' + l.id] = ui.run.answers.slice(); persist(); }
+      render(); window.scrollTo(0, 0); break;
+    }
+    case 'ans': ui.run.answers[Number(el.dataset.q)] = Number(v); break;
+    case 'step': {
+      const key = ui.me + '|' + ui.openLesson; const set = new Set(data.steps[key] || []); const i = Number(v);
+      if (el.checked) set.add(i); else set.delete(i);
+      data.steps[key] = [...set]; persist(); render(); break;
+    }
+    case 'delQ': { const l = lessonById(ui.quizLesson); l.quiz.splice(Number(v), 1); persist(); toast(t('qDeleted')); render(); break; }
+    case 'resLesson': ui.resLesson = v; render(); break;
+    case 'copyReport': copyText(reportText()); break;
+    case 'copyFb': { const txt = feedbackText(ui.fbStudent); if (txt) copyText(txt); break; }
+    case 'rerun': render(); toast('✓'); break;
+    case 'reset':
+      if (ui.resetArm) { data = buildDemo(); ui.resetArm = false; ui.openLesson = null; ui.run = null; ui.editing = null; persist(); toast(t('resetDone')); }
+      else ui.resetArm = true;
+      render(); break;
+  }
+});
+document.addEventListener('change', e => {
+  const el = e.target; const a = el.dataset && el.dataset.act;
+  if (a === 'me') { ui.me = el.value; ui.run = null; render(); }
+  if (a === 'quizLesson') { ui.quizLesson = el.value; ui.formErr = ''; render(); }
+  if (a === 'fbStudent') { ui.fbStudent = el.value; render(); }
+});
+document.addEventListener('input', e => {
+  const el = e.target; const a = el.dataset && el.dataset.act;
+  if (a === 'score') { data.scores[el.dataset.sid] = data.scores[el.dataset.sid] || {}; data.scores[el.dataset.sid][el.dataset.k] = el.value; persist(); updateGradeCalcs(); }
+  if (a === 'cfg') {
+    const n = Math.round(Number(el.value));
+    const lim = el.dataset.k === 'foCount' ? [1, 30] : [1, 100];
+    if (Number.isFinite(n) && n >= lim[0] && n <= lim[1]) {
+      data.cfg[el.dataset.k] = n; persist();
+      const k = el.dataset.k;
+      if (k !== 'foCount') {
+        const map = { max1: 'b1', max2: 'b2', maxT: 't' };
+        document.querySelectorAll(`.score-in[data-k="${map[k]}"]`).forEach(i => i.dataset.max = n);
+        const th = document.querySelectorAll('thead th'); const idx = { max1: 2, max2: 3, maxT: 4 }[k];
+        if (th[idx]) th[idx].textContent = `${t({ max1: 'colB1', max2: 'colB2', maxT: 'colT' }[k])} / ${n}`;
+      }
+      updateGradeCalcs();
+    }
+  }
+});
+document.addEventListener('submit', e => {
+  e.preventDefault();
+  if (e.target.id === 'lessonForm') {
+    const g = id => document.getElementById(id).value;
+    const lines = s => s.split('\n').map(x => x.trim()).filter(Boolean);
+    const draft = { title: g('fTitle').trim(), subject: g('fSubject'), grade: Math.min(11, Math.max(1, Math.round(Number(g('fGrade')) || 8))), duration: Math.min(180, Math.max(10, Math.round(Number(g('fDuration')) || 40))), goal: g('fGoal').trim(), materials: g('fMaterials'), safety: g('fSafety').trim(), steps: g('fSteps') };
+    if (!draft.title || !lines(draft.steps).length) { ui.editing.draft = draft; ui.formErr = t('errTitle'); render(); return; }
+    const obj = { subject: draft.subject, grade: draft.grade, duration: draft.duration, title: draft.title, goal: draft.goal, materials: lines(draft.materials), safety: draft.safety, steps: lines(draft.steps) };
+    if (ui.editing.id) { const l = lessonById(ui.editing.id); Object.assign(l, obj); ui.openLesson = l.id; }
+    else { const l = { id: uid('l'), quiz: [], ...obj }; data.lessons.push(l); ui.openLesson = l.id; }
+    ui.editing = null; ui.formErr = ''; persist(); toast(t('saved')); render(); window.scrollTo(0, 0);
+  }
+  if (e.target.id === 'qForm') {
+    const q = document.getElementById('qText').value.trim();
+    const opts = [0, 1, 2, 3].map(j => document.getElementById('qOpt' + j).value.trim());
+    const c = document.querySelector('input[name="qCorrect"]:checked');
+    if (!q || opts.some(o => !o) || !c) { ui.formErr = 'q'; render();
+      document.getElementById('qText').value = q; opts.forEach((o, j) => document.getElementById('qOpt' + j).value = o);
+      if (c) document.querySelector(`input[name="qCorrect"][value="${c.value}"]`).checked = true; return; }
+    lessonById(ui.quizLesson).quiz.push({ q, opts, a: Number(c.value) });
+    ui.formErr = ''; persist(); toast(t('qAdded')); render();
+  }
+});
+
+render();
+</script>
+</body>
+</html>
